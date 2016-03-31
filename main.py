@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+
 import httplib
 import json
 
@@ -47,6 +48,12 @@ class Instagram(object):
 if __name__ == '__main__':
     i = Instagram()
 
-    # i.get_user_info(i.SAMPLE_USER['id'])
-    media = i.get_user_media(i.SAMPLE_USER['id'])[0]['id']
-    print 'Likes of the media with id {} - {}'.format(media, i.get_media_likes(media))
+    # Get user info
+    sample_user_data = i.get_user_info(i.SAMPLE_USER['id'])
+    print 'User data - {}'.format(sample_user_data)
+
+    # Get last media of the sample user
+    random_media_id = i.get_user_media(i.SAMPLE_USER['id'])[0]['id']
+    random_media_likes = i.get_media_likes(random_media_id)
+    
+    print 'Likes of the media with id {} - {}'.format(random_media_id, random_media_likes)
