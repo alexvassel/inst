@@ -44,8 +44,9 @@ class Instagram(object):
         return response
 
 
-i = Instagram()
+if __name__ == '__main__':
+    i = Instagram()
 
-# i.get_user_info(i.SAMPLE_USER['id'])
-media = i.get_user_media(i.SAMPLE_USER['id'])[0]['id']
-print 'Likes of the media with id {} - {}'.format(media, i.get_media_likes(media))
+    # i.get_user_info(i.SAMPLE_USER['id'])
+    media = i.get_user_media(i.SAMPLE_USER['id'])[0]['id']
+    print 'Likes of the media with id {} - {}'.format(media, i.get_media_likes(media))
