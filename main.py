@@ -2,6 +2,7 @@
 
 import httplib
 import json
+import sys
 
 from furl import furl
 import requests
@@ -10,16 +11,15 @@ from models import User, Stat, Media
 
 
 class Instagram(object):
-    ACCESS_TOKEN = "487872815.1497896.ef9829ec8bf9414cb7d85967833670b5"
-    CLIENT_SECRET = "de0a95bcfb5746f6915e04b1905a73f8"
+    ACCESS_TOKEN = "487872815.5540849.0079521f39ae40ab96fe7403dde3331d"
+    CLIENT_SECRET = "b7d2d7585fc047eb9dd6ae7d6c651e4e"
     BASE_URL = 'https://api.instagram.com/v1'
-    SAMPLE_USER = {'id': '487872815', 'sample_media_id': '1211826064585392206_487872815'}
 
     @staticmethod
     def _parse_response(content):
         content = json.loads(content)
         if content['meta']['code'] != httplib.OK:
-            raise Exception('API returned bad response like {}'.format(content['meta']))
+            raise TypeError('API returned bad response like {}'.format(content['meta']))
         return content['data']
 
     def _update_url(self, url):
@@ -33,18 +33,33 @@ class Instagram(object):
         response = self._parse_response(r.content)
         return response
 
-    def get_user_media(self, user_id):
-        url = self._update_url('/users/{}/media/recent'.format(user_id))
-        r = requests.get(url)
-        response = self._parse_response(r.content)
-        return response
-
     def get_user_info(self, user_id):
         url = self._update_url('/users/{}/'.format(user_id))
         r = requests.get(url)
         response = self._parse_response(r.content)
         return response
-    
+
+    def get_all_medias(self, user_id):
+        result = []
+        max_id = 0
+        while True:
+            url = self._update_url(('/users/{}/media/recent?&max_id={}'
+                                    .format(user_id, max_id)))
+            r = requests.get(url)
+            response = self._parse_response(r.content)
+            if not response:
+                break
+            result.extend(response)
+            max_id = response[-1]['id']
+        return result
+
+    def get_user_id_by_username(self, username):
+        url = self._update_url('/users/search?q={}'.format(username))
+        r = requests.get(url)
+        response = self._parse_response(r.content)
+        user_id = response[0]['id']
+        return user_id
+
 
 def _create_new_user(user_info):
     new_user = User(username=user_info['username'], bio=user_info['bio'],
@@ -57,33 +72,40 @@ def _create_new_user(user_info):
 
     user_stat.save()
     new_user.save()
+    return new_user
 
 
 if __name__ == '__main__':
     api = Instagram()
 
-    likes = dict()
+    # TODO проверка наличия пользователя
+    user_id = api.get_user_id_by_username('frosienka')
 
-    # Get user info
-    # sample_user_data = i.get_user_info(i.SAMPLE_USER['id'])
-    # print 'User data - {}'.format(sample_user_data)
-
-    # Get last media of the sample user
-    medias = api.get_user_media(api.SAMPLE_USER['id'])
+    # TODO вывод ошибки в нормальном виде
+    # Get all medias of the given user
+    try:
+        medias = api.get_all_medias(user_id)
+    except TypeError as e:
+        sys.exit(e.message)
 
     for media in medias:
         new_media = Media(media_id=media['id'])
         new_media.save()
 
+        # Get all users that liked this media
         media_users = api.get_media_likes(media['id'])
-        
+
         for user in media_users:
-            user_info = api.get_user_info(user['id'])
+            # Get detailed info about each user liked media
+            try:
+                user_info = api.get_user_info(user['id'])
+            except TypeError as e:
+                print e.message
+                continue
+
             try:
                 user = User.select().where(User.user_id == user_info['id']).get()
             except User.DoesNotExist:
-                _create_new_user(user_info)
-                
+                user = _create_new_user(user_info)
+
             new_media.users.add([user])
-    
-    # print 'Likes of the media with id {} - {}'.format(random_media_id, random_media_likes)
