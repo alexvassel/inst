@@ -3,6 +3,8 @@
 Script, that gets the given user likes statistics. The input is a username,
 the output is a database records.
 
+Script creates (or updates) database with the name `instagram.db`
+
 ### Tables used
 
 #### Table 1 - media
