@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
-from models import User, Stat
+from peewee import OperationalError
+from models import User, Stat, db, Media
 
 
 def create_new_user(user_info):
@@ -15,3 +16,11 @@ def create_new_user(user_info):
     user_stat.save()
     new_user.save()
     return new_user
+
+
+def create_database():
+    db.connect()
+    try:
+        db.create_tables((User, Stat, Media.users.get_through_model(), Media))
+    except OperationalError:
+        print 'database already exists'

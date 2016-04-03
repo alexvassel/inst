@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
 
-from peewee import (Model, CharField, SqliteDatabase, IntegerField, ForeignKeyField,
-                    OperationalError)
+from peewee import Model, CharField, SqliteDatabase, IntegerField, ForeignKeyField
 from playhouse.fields import ManyToManyField
 
-db = SqliteDatabase('instagram.db')
+DB_FILENAME = 'instagram.db'
+
+db = SqliteDatabase(DB_FILENAME)
 
 
 class Stat(Model):
@@ -35,11 +36,3 @@ class Media(Model):
 
     class Meta:
         database = db
-
-
-def create_database():
-    db.connect()
-    try:
-        db.create_tables((User, Stat, Media.users.get_through_model(), Media))
-    except OperationalError:
-        print 'database already exists'
