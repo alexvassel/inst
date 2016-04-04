@@ -37,11 +37,23 @@ see diagram.png file from repository
 
 ### Usage
 
-To install required OS packages
+#### Ubuntu (Debian)
 
 `sudo apt-get install libffi-dev`
 
+
+
 To install all python requirements
+
+```bash
+sudo easy_install pip
+
+sudo pip install virtualenv
+mkdir ~/Virtualenvs
+cd ~/Virtualenvs
+virtualenv inst
+source inst/bin/activate
+```
 
 `pip install -r reqs.txt`
 
