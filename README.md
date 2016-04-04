@@ -14,7 +14,7 @@ Script creates (or updates) database with the name `instagram.db`
 
 #### Table 1 - media
 
-media_id
+* media_id
 
 #### Table 2 - user
 
