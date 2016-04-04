@@ -53,11 +53,12 @@ mkdir ~/Virtualenvs
 cd ~/Virtualenvs
 virtualenv inst
 source inst/bin/activate
+pip install -r reqs.txt
 ```
 
-`pip install -r reqs.txt`
+#### Run
 
-Run
+Go to repo directory and
 
 `python main.py username`
 
