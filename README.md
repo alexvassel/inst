@@ -1,5 +1,10 @@
 ### Description
 
+Technologies used:
+
+* Python 2.7
+* SQLite
+
 Script, that gets the given user likes statistics. The input is a username,
 the output is a database records.
 
@@ -32,7 +37,11 @@ see diagram.png file from repository
 
 ### Usage
 
-To install all requirenments
+To install required OS packages
+
+`sudo apt-get install libffi-dev`
+
+To install all python requirements
 
 `pip install -r reqs.txt`
 
@@ -41,5 +50,7 @@ Run
 `python main.py username`
 
 Example `python main.py 'sample_user'`
+
+This shall create (or update) sqlite database named `instagram.db`
 
 
